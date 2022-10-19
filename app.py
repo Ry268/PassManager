@@ -110,3 +110,11 @@ def login():
         # sessionにuser_idを保持
         session["user_id"] = user.id
         return redirect(url_for("index"))
+
+# ログアウト機能
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    session.clear()
+    return redirect(url_for("index"))
