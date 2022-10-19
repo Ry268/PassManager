@@ -44,3 +44,40 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "GET":
+        return render_template("register.html")
+    else:
+        # userからemailとpasswordを受け取る
+        email = request.form.get("email")
+        main_password = request.form.get("mainpassword")
+        sub_password = request.form.get("subpassword")
+
+        # emailやpasswordの入力がない場合などのエラー処理
+        if not email:
+            flash("emailを入力してください")
+            return render_template("register.html")
+        if not main_password:
+            flash("パスワードを入力してください")
+            return render_template("register.html")
+        if not sub_password:
+            flash("パスワードを入力してください")
+            return render_template("register.html")
+        if main_password != sub_password:
+            flash("同じパスワードを入力してください")
+            return render_template("register.html")
+        # hashの作成
+        hash = generate_password_hash(main_password, method="sha512", salt_length=1000)
+        new_user = User(email=email, hash=hash)
+        
+        # usersテーブルに登録
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+        # 登録できなかった場合
+        except:
+            flash("既にuserが存在します")
+            return render_template("register.html")
+
+        return redirect(url_for("index"))
