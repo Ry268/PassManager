@@ -36,7 +36,7 @@ class Passlist(db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Users.query.get(int(user_id))
+    return User.query.get(int(user_id))
 
 
 @app.route("/")
@@ -80,4 +80,33 @@ def register():
             flash("既にuserが存在します")
             return render_template("register.html")
 
+        return redirect(url_for("login"))
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return render_template("login.html")
+    else:
+        # userからemailとpasswordを受け取る
+        email = request.form.get("email")
+        password = request.form.get("password")
+        # エラー処理
+        if not email:
+            flash("メールアドレスを入力してください。")
+            return render_template("login.html")        
+        if not password:
+            flash("パスワードを入力してください。")
+            return render_template("login.html")
+
+        # データベースからuserのデータを取得
+        user = User.query.filter_by(email=email).first()
+
+        # user が存在しないまたは保存されたhashとpasswordのhashが違う場合
+        if not user or not check_password_hash(user.hash, password):
+            flash("メールアドレスもしくはパスワードが間違っています。")
+            return render_template("login.html")
+
+        login_user(user)
+        # sessionにuser_idを保持
+        session["user_id"] = user.id
         return redirect(url_for("index"))
