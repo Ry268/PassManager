@@ -180,7 +180,6 @@ def detail(id):
     passlist = Passlist.query.get(id)
     # リスト型で帰ってくるため辞書にする
     password = passlist.password
-    print(passlist)
     # ファイルからキーを読み込む
     with open('private.pem', 'rb') as f:
         private_pem = f.read()
@@ -189,3 +188,12 @@ def detail(id):
     decipher_rsa = PKCS1_OAEP.new(private_key)
     password = decipher_rsa.decrypt(password).decode("utf-8")
     return render_template("detail.html", passlist=passlist, password=password)
+
+# データの削除
+@app.route("/delete/<int:id>")
+@login_required
+def delete(id):
+    passlist = Passlist.query.get(id)
+    db.session.delete(passlist)
+    db.session.commit()
+    return redirect(url_for("passlist"))
