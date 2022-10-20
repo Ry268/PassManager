@@ -170,5 +170,22 @@ def passlist():
         token = cipher_rsa.encrypt(generate_pass.encode())
         new_pass = Passlist(title=title, account=account, password=token, user_id=user_id)
         db.session.add(new_pass)
-        db.commit()
+        db.session.commit()
         return redirect(url_for("passlist"))
+
+# データの詳細
+@app.route("/detail/<int:id>")
+@login_required
+def detail(id):
+    passlist = Passlist.query.get(id)
+    # リスト型で帰ってくるため辞書にする
+    password = passlist.password
+    print(passlist)
+    # ファイルからキーを読み込む
+    with open('private.pem', 'rb') as f:
+        private_pem = f.read()
+        private_key = RSA.import_key(private_pem)
+
+    decipher_rsa = PKCS1_OAEP.new(private_key)
+    password = decipher_rsa.decrypt(password).decode("utf-8")
+    return render_template("detail.html", passlist=passlist, password=password)

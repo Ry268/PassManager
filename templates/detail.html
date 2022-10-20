@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    詳細
+{% endblock %}
+
+{% block main %}
+    <div class="card w-50 mb-3" style="margin: auto;">
+        <div class="card-body">
+            <h2 class="pb-2">タイトル : {{ passlist.title }}</h2>
+            <div class="d-flex">
+                <p class="pe-4">ユーザー名 : </p>
+                <input type="text" id="copyid" value="{{ passlist.account }}" readonly>
+                <button onclick="copyToid()"><img src="/static/img/copy.png" class="smallimg"></button>
+            </div>
+            <div class="d-flex">
+                <p class="pe-4">パスワード : </p>
+                <input type="text" id="copypass" value="{{ password }}" readonly>
+                <button onclick="copyTopass()"><img src="/static/img/copy.png" class="smallimg"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToid() {
+            // コピー対象をJavaScript上で変数として定義する
+            var copyTarget = document.getElementById("copyid");
+            // コピー対象のテキストを選択する
+            copyTarget.select();
+            // 選択しているテキストをクリップボードにコピーする
+            document.execCommand("Copy");
+            // コピーをお知らせする
+            alert("コピーできました！ : " + copyTarget.value);
+        }
+
+        function copyTopass() {
+            // コピー対象をJavaScript上で変数として定義する
+            var copyTarget = document.getElementById("copypass");
+            // コピー対象のテキストを選択する
+            copyTarget.select();
+            // 選択しているテキストをクリップボードにコピーする
+            document.execCommand("Copy");
+            // コピーをお知らせする
+            alert("コピーできました！ : " + copyTarget.value);
+        }
+    </script>
+{% endblock %}
