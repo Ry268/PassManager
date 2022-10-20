@@ -118,3 +118,10 @@ def logout():
     logout_user()
     session.clear()
     return redirect(url_for("index"))
+
+
+# パスワードの生成
+@app.route("/generate")
+@login_required
+def generate():
+    return render_template("generate.html")
