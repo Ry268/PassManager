@@ -1,4 +1,6 @@
 import os
+import secrets
+import string
 
 from flask import Flask, render_template, redirect, request, flash, session, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -38,6 +40,16 @@ class Passlist(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# passwordを作成する
+def get_random_password_string(length, flag):
+    # 半角英数字のみ(大文字を含む)
+    if flag:
+        pass_chars = string.ascii_letters + string.digits + string.punctuation
+    else:
+        pass_chars = string.ascii_letters + string.digits
+    # 半角英数字＋記号
+    password = ''.join(secrets.choice(pass_chars) for x in range(length))
+    return password
 
 @app.route("/")
 def index():
@@ -119,9 +131,44 @@ def logout():
     session.clear()
     return redirect(url_for("index"))
 
-
 # パスワードの生成
 @app.route("/generate")
 @login_required
 def generate():
     return render_template("generate.html")
+
+# パスワード一覧
+@app.route("/passlist", methods=["GET", "POST"])
+@login_required
+def passlist():
+    if request.method == "GET":
+        user_id = session["user_id"]
+        passlists = Passlist.query.filter_by(user_id=user_id)
+        return render_template("passlist.html", passlists=passlists)
+    else:
+        title = request.form.get("title")
+        account = request.form.get("account")
+        flag = request.form.get("flag")
+        length = request.form.get("length")
+        user_id = session["user_id"]
+        length = int(length)
+        if not length:
+            return render_template("generate.html", message="文字数を選択してください")
+
+        if length < 0 or length > 30 or type(length) != int:
+            return render_template("generate.html", message="1以上30以下の整数を入力してください")
+
+        if type(title) == int:
+            return render_template("generate.html", message="数字以外の文字も含めてください")
+
+        with open('receiver.pem', 'rb') as f:
+            public_pem = f.read()
+            public_key = RSA.import_key(public_pem)
+
+        generate_pass = get_random_password_string(int(length), flag)
+        cipher_rsa = PKCS1_OAEP.new(public_key)
+        token = cipher_rsa.encrypt(generate_pass.encode())
+        new_pass = Passlist(title=title, account=account, password=token, user_id=user_id)
+        db.session.add(new_pass)
+        db.commit()
+        return redirect("/passlist")
