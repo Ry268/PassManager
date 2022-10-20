@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    パスワード一覧
+{% endblock %}
+
+{% block main %}
+    {% for passlist in passlists %}
+        <div class="card w-50 mb-3" style="margin: auto;">
+            <div class="card-body">
+                <h2 class="card-title">タイトル {{ passlist.title }}</h2>
+                <h2>ユーザーID {{ passlist.account }}</h2>
+                <a class="btn btn-success" href="/detail/{{ passlist.id }}" role="button">詳細</a>
+                <a class="btn btn-danger" href="/delete/{{ passlist.id }}" role="button">削除</a>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

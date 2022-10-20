@@ -171,4 +171,4 @@ def passlist():
         new_pass = Passlist(title=title, account=account, password=token, user_id=user_id)
         db.session.add(new_pass)
         db.commit()
-        return redirect("/passlist")
+        return redirect(url_for("passlist"))
