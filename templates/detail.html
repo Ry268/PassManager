@@ -8,16 +8,14 @@
     <div class="card w-50 mb-3" style="margin: auto;">
         <div class="card-body">
             <h2 class="pb-2">タイトル : {{ passlist.title }}</h2>
-            <div class="d-flex">
-                <p class="pe-4">ユーザー名 : </p>
-                <input type="text" id="copyid" value="{{ passlist.account }}" readonly>
-                <button onclick="copyToid()"><img src="/static/img/copy.png" class="smallimg"></button>
-            </div>
-            <div class="d-flex">
-                <p class="pe-4">パスワード : </p>
-                <input type="text" id="copypass" value="{{ password }}" readonly>
-                <button onclick="copyTopass()"><img src="/static/img/copy.png" class="smallimg"></button>
-            </div>
+            <table>
+                <tr>
+                    <th>ユーザーID</th> <th><input type="text" id="copyid" value="{{ passlist.account }}" readonly></th> <th><button onclick="copyToid()"><img src="/static/img/copy.png" class="smallimg"></button></th>
+                </tr>
+                <tr>
+                    <th>パスワード</th> <th><input type="text" id="copypass" value="{{ password }}" readonly></th> <th><button onclick="copyTopass()"><img src="/static/img/copy.png" class="smallimg"></button></th>
+                </tr>
+            </table>
         </div>
     </div>
 
